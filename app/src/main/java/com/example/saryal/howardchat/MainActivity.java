@@ -1,5 +1,7 @@
 package com.example.saryal.howardchat;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -30,14 +32,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "<your tag here>";
     private static final int RC_SIGN_IN = 9001;
-
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
-    private ProgressBar mProgressBar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,10 +89,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onStart() {
         super.onStart();
-
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
+        Intent intent = new Intent(this,NotificationService.class);
+        startService(intent);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        Log.i("shr","app stopped");
+        Intent intent = new Intent(this,NotificationService.class);
+        startService(intent);
     }
 
     @Override

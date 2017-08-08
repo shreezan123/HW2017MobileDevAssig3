@@ -1,5 +1,7 @@
 package com.example.saryal.howardchat;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 
 /**
@@ -45,11 +47,22 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user == null) {
-                    Toast.makeText(getContext(), "Can't send text, not logged in", Toast.LENGTH_SHORT);
+
+                ConnectivityManager cm =
+                        (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
+
+                if (isConnected){
+                    Toast.makeText(getContext(), "Internet working, message sent", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(getContext(), "Internet not working", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Messages messages= new Messages(user.getDisplayName(),user.getUid(),edittext.getText().toString());
+                Messages messages= new Messages(edittext.getText().toString(),user.getUid(),user.getDisplayName());
                 MessagesSource.get(getContext()).sendMessages(messages);
                 edittext.setText("");
             }
